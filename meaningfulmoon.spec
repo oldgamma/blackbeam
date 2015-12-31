@@ -6,8 +6,7 @@ Summary:	Packages the meaningfulmoon cloud9 service
 License:	GNU GPL3
 URL:		https://github.com/persistentdog/meaningfulmoon
 Source0:	%{name}-%{version}.tar.gz
-Requires:	wildfish
-Requires:	systemd
+Requires:	wildfish, systemd
 
 %description
 
@@ -24,4 +23,4 @@ cp meaningfulmoon.service ${RPM_BUILD_ROOT}/usr/lib/systemd/service &&
 true
 
 %files
-/usr/lib/systemd/service
+/usr/lib/systemd/service/meaningfulmoon.service
