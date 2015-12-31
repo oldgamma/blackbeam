@@ -18,9 +18,9 @@ Requires:	wildfish, systemd
 
 %install
 rm -rf ${RPM_BUILD_ROOT} &&
-mkdir --parents ${RPM_BUILD_ROOT}/usr/lib/systemd/service &&
-cp meaningfulmoon.service ${RPM_BUILD_ROOT}/usr/lib/systemd/service &&
+mkdir --parents ${RPM_BUILD_ROOT}/usr/lib/systemd/system &&
+cp meaningfulmoon.service ${RPM_BUILD_ROOT}/usr/lib/systemd/system &&
 true
 
 %files
-/usr/lib/systemd/service/meaningfulmoon.service
+/usr/lib/systemd/system/meaningfulmoon.service

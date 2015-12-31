@@ -1,7 +1,7 @@
 #!/bin/bash
 
 VERSION="${@}" &&
-    RELEASE=0.1.1 &&
+    RELEASE=0.1.2 &&
     rm --recursive --force build &&
     mkdir --parents build &&
     sed -e "s#VERSION#${VERSION}#" -e "s#RELEASE#${RELEASE}#" -e "wbuild/meaningfulmoon.spec" meaningfulmoon.spec &&
@@ -25,27 +25,32 @@ EOF
     mock --init --configdir build/config --resultdir build/init/02 &&
     mkdir --parents build/rebuild &&
     mock --rebuild build/buildsrpm/01/meaningfulmoon-${VERSION}-${RELEASE}.src.rpm --configdir build/config --resultdir build/rebuild/01 &&
-    if false
-    then
-	echo I think mock and systemd do not work together &&
-	    echo that is why this is hard to test. &&
-	    echo wish me luck &&
-	    mkdir --parents build/init/03 &&
-	    mock --init --configdir build/config --resultdir build/init/03 &&
-	    mkdir --parents build/install/01 &&
-	    mock --install build/rebuild/01/meaningfulmoon-${VERSION}-${RELEASE}.x86_64.rpm --configdir build/config --resultdir build/install/03 &&
-	    mkdir --parents build/shell/01 &&
-	    mock --shell "adduser emory && systemctl start meaningfulmoon.service && sleep 10s && wget --user emory --password emory http://127.0.0.1:26775" --configdir build/config --resultdir build/shell/01 &&
-	    mkdir --parents build/copyout/01 &&
-	    mock --copyout index.html build/index.html --configdir build/config --resultdir build/copyout/01 &&
-	    true
-    fi &&
+    mkdir --parents build/init/03 &&
+    mock --init --configdir build/config --resultdir build/init/03 &&
+    mkdir --parents build/install/01 &&
+    mock --install build/rebuild/01/meaningfulmoon-${VERSION}-${RELEASE}.x86_64.rpm --configdir build/config --resultdir build/install/01 &&
+    mkdir --parents build/copyin/01 &&
+    mock --copyin meaningfulmoon.service /tmp/meaningfulmoon.service --configdir build/config --resultdir build/copyin/01 &&
+    mkdir --parents build/shell/01 &&
+    mock --shell "diff --brief --report-identical-files /tmp/meaningfulmoon.service /usr/lib/systemd/system/meaningfulmoon.service" --configdir build/config --resultdir build/shell/01 &&
+    mkdir --parents build/shell/02 &&
+    # comment out the below because
+    # when we do "systemctl start ..."
+    # we get
+    # Running in chroot, ignoring request.
+    #
+    # we are only testing if the file was copied,
+    # not if it is correct
+    #
+    # mock --shell "adduser emory && systemctl start meaningfulmoon.service && sleep 10s && wget --user emory --password emory http://127.0.0.1:26775" --configdir build/config --resultdir build/shell/02 &&
+    # mkdir --parents build/copyout/01 &&
+    # mock --copyout index.html build/index.html --configdir build/config --resultdir build/copyout/01 &&
     git clone -b master git@github.com:rawflag/dancingleather.git build/repository &&
-	cp build/rebuild/01/meaningfulmoon-${VERSION}-${RELEASE}.x86_64.rpm build/repository &&
-	cd build/repository &&
-	rpm --resign meaningfulmoon-${VERSION}-${RELEASE}.x86_64.rpm &&
-	createrepo . &&
-	git add repodata/* meaningfulmoon-${VERSION}-${RELEASE}.x86_64.rpm &&
-	git commit -am "Added meaningfulmoon ${VERSION} ${RELEASE}" -S &&
-	git push origin master &&
-	true
+    cp build/rebuild/01/meaningfulmoon-${VERSION}-${RELEASE}.x86_64.rpm build/repository &&
+    cd build/repository &&
+    rpm --resign meaningfulmoon-${VERSION}-${RELEASE}.x86_64.rpm &&
+    createrepo . &&
+    git add repodata/* meaningfulmoon-${VERSION}-${RELEASE}.x86_64.rpm &&
+    git commit -am "Added meaningfulmoon ${VERSION} ${RELEASE}" -S &&
+    git push origin master &&
+    true
