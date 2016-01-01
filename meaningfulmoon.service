@@ -2,7 +2,7 @@
 Description=Meaningful Moon Cloud9 IDE Service
 
 [Service]
-ExecStart=/usr/bin/su --login emory --command "cd workspace && node /opt/c9sdk/server.js --port 26775 --listen 0.0.0.0 --auth emory:emory && true"
+ExecStart=/usr/bin/su --login emory --command "node /opt/c9sdk/server.js -w /home/emory/workspace --port 26775 --listen 0.0.0.0 --auth emory:emory && true"
 
 
 [Install]
