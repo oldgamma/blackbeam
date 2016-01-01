@@ -32,7 +32,7 @@ EOF
     mkdir --parents build/copyin/01 &&
     mock --copyin meaningfulmoon.service /tmp/meaningfulmoon.service --configdir build/config --resultdir build/copyin/01 &&
     mkdir --parents build/shell/01 &&
-    mock --shell "diff --brief --report-identical-files /tmp/meaningfulmoon.service /usr/lib/systemd/system/meaningfulmoon.service" --configdir build/config --resultdir build/shell/01 &&
+    mock --shell "if [ ! -f /usr/lib/systemd/system/meaningfulmoon.service ]; then exit 64; fi" --configdir build/config --resultdir build/shell/01 &&
     mkdir --parents build/shell/02 &&
     # comment out the below because
     # when we do "systemctl start ..."
